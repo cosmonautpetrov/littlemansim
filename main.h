@@ -13,6 +13,7 @@ struct lmc{
 };
 
 //functions for little man computer opcodes
+#define OP_NUM 10
 unsigned char hlt(struct lmc* src);
 unsigned char add(struct lmc* src);
 unsigned char sub(struct lmc* src);
@@ -26,6 +27,9 @@ unsigned char out(struct lmc* src);
 
 //function to convert file to data
 char* ftd(char* src);
+
+//cleanup function
+int cleanup(struct lmc* src);
 
 #endif
 
