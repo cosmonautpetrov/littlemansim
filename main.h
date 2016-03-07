@@ -24,5 +24,8 @@ unsigned char brp(struct lmc* src);
 unsigned char inp(struct lmc* src);
 unsigned char out(struct lmc* src);
 
+//function to convert file to data
+char* ftd(char* src);
+
 #endif
 
