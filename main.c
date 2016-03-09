@@ -30,6 +30,7 @@ int main(int argc, char* argv[]){
 	sim->dat = data;
 	sim->mem = malloc(sizeof(char)*mem_length);
 
+	//make table of function pointers to opcodes
 	op[0]=hlt;
 	op[1]=add;
 	op[2]=sub;
@@ -41,19 +42,23 @@ int main(int argc, char* argv[]){
 	op[8]=inp;
 	op[9]=out;	
 	
-	for(sim->ip=0;sim->dat[sim->ip]!='\0';sim->ip+=2){
-		op[sim->dat[sim->ip]](sim);
+	//main loop, loop through loaded program until it ends
+	for(sim->ip=0;sim->dat[sim->ip]!='\0';){
+		op[sim->dat[sim->ip]](sim);//call corresponding opcode
 	}
 
+	//cleanup
 	cleanup(sim);
 	return 0;
 
 }
 
+//file to data
 char* ftd(char* src){
 
 	FILE* fp;
-
+	
+	//if you can't open a file, return
 	if(!(fp = fopen(src, "r"))){
 		return 0;
 	}
@@ -73,6 +78,7 @@ char* ftd(char* src){
 	return data;
 }
 
+//frees little man sim and any associated data
 int cleanup(struct lmc* src){
 	free(src->dat);
 	free(src->mem);
@@ -81,34 +87,59 @@ int cleanup(struct lmc* src){
 }
 
 unsigned char hlt(struct lmc* src){
+	cleanup(src);
+	exit(1);
 	return 0;
 }
 unsigned char add(struct lmc* src){
+	int addr = src->dat[src->ip+1];
+	src->reg += src->mem[addr];
+	src->ip += 2;
 	return 0;
 }
 unsigned char sub(struct lmc* src){
+	int addr = src->dat[src->ip+1];
+	src->reg -= src->mem[addr];
+	src->ip += 2;
 	return 0;
 }
 unsigned char sta(struct lmc* src){
+	int addr = src->dat[src->ip+1];
+	src->mem[addr] = src->reg;
+	src->ip += 2;
 	return 0;
 }
 unsigned char lda(struct lmc* src){
+	int addr = src->dat[src->ip+1];
+	src->reg = src->mem[addr];
+	src->ip += 2;
 	return 0;
 }
 unsigned char bra(struct lmc* src){
+	src->ip = src->dat[src->ip+1];
 	return 0;
 }
 unsigned char brz(struct lmc* src){
+	if(!src->reg)
+		src->ip = src->dat[src->ip+1];
+	else
+		src->ip+=2;
 	return 0;
 }
 unsigned char brp(struct lmc* src){
+	if(src->reg > 0)
+		src->ip = src->dat[src->ip+1];
+	else
+		src->ip+=2;
 	return 0;
 }
 unsigned char inp(struct lmc* src){
-	printf("get input\n");
+	src->reg=getchar();
+	src->ip++;
 	return 0;
 }
 unsigned char out(struct lmc* src){
-	printf("so and so function\n");
+	putchar(src->reg);
+	src->ip++;
 	return 0;
 }
