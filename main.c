@@ -25,9 +25,12 @@ int main(int argc, char* argv[]){
 		return -1;
 	}
 
+	char debug = 0;
 	//check if debug flag set
 	if(argc > 3){
-			
+		if(!strcmp(argv[3],"debug")){
+			debug = 1; 
+		}	
 	}
 
 	//if everything checks out, create lmc and start simulating
@@ -49,7 +52,8 @@ int main(int argc, char* argv[]){
 	
 	//main loop, loop through loaded program until it ends
 	for(sim->ip=0;sim->dat[sim->ip]!='\0';){
-		print_debug(sim);
+		if(debug)
+			print_debug(sim);
 		op[sim->dat[sim->ip]](sim);//call corresponding opcode
 	}
 
